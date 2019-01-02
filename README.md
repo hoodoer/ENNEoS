@@ -1,4 +1,7 @@
 # ENNEoS
+VERY ROUGH PROOF OF CONCEPT
+Aheem. Work in progress. 
+
 Evolutionary Neural Network Encoder of Shenanigans
 
 This proof of concept program is to explore the use of
