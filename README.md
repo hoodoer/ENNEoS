@@ -3,7 +3,7 @@ Evolutionary Neural Network Encoder of Shenanigans
 
 This proof of concept program is to explore the use of
 neuroevolution as a method for encoding shellcode.
-This program is the encoder, which uses genetic algorithms
+The encoder uses genetic algorithms
 to evolve a neural network that will output the desired
 shellcode at runtime.
 
