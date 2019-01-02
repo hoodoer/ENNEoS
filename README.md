@@ -1,6 +1,6 @@
 # ENNEoS
 VERY ROUGH PROOF OF CONCEPT
-Aheem. Work in progress. 
+Work in progress. 
 
 Evolutionary Neural Network Encoder of Shenanigans
 
