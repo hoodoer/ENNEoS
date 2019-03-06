@@ -425,6 +425,55 @@ double calculateScore(BrainTestData &brainData)
 
 
 
+// New and improved. Or, new and busted. But I'm going to get there.
+// New multi-threading model will take advantage of the shellcode chunking.
+// This'll be much more efficient at utilizing resources, and scale out the
+// wazoo.
+// Chunker crunch'un thread
+void *runChunkCrunchingThread(void *iValue)
+{
+    struct timespec sleepTime;
+    sleepTime.tv_sec  = 0;
+    sleepTime.tv_nsec = nanoSleepAmount;
+
+    // Let's get my unique thread index number
+    int threadNumber = *((int *)iValue);
+
+    // Setting this to true will allow the
+    // next thread to startup and get its
+    // index number
+    THREAD_READY = true;
+
+
+
+    // We can't have a thread per chunk, we have too many chunks
+    // Scale the threads to the hardware, then queue chunks
+    queue <unsigned int> myChunkQueue;
+
+
+    // The chunk this thread is responsible for solving
+    unsigned int chunkIndex;
+
+
+
+    // We'll need to wait for shared
+    // memory to be initialized here
+    // eventually
+    while (!sharedMemoryReady)
+    {
+        nanosleep(&sleepTime, NULL);
+    }
+
+    cout<<"Chunker-thunker numero "<<threadNumber<<" is pumped and eager to contribute to rube goldberish shenanigans"<<endl;
+
+    // DONE is a global. Deal with it.
+    while (!DONE)
+    {
+        // Hmm, I need to insert some of that genetic stuff here.
+
+    }
+}
+
 
 
 
