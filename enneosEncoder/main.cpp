@@ -33,6 +33,8 @@
 // This is the shellcode to learn
 #include "encodedOutput.h"
 
+// Hmm, need my second shellcode
+
 
 using namespace std;
 
