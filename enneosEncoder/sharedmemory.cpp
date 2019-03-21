@@ -12,9 +12,24 @@ using namespace std;
 *********************************************************************/
 
 // The queue of jobs the job manager
-// cooks up. This jobs are sent to
+// cooks up. These jobs are sent to
 // the execution threads
+// In this queue, the jobs are
+// an index of bots. Early version
+// of multi-threading
 queue <unsigned int> globalEvalJobQueue;
+
+
+// The queu for the newer version of multi-threading
+// takes into account the chunking of
+// shellcode, which makes solutions easier
+// and is better for multithreading.
+// Each thread will have a unique
+// genetic algorithm to solve for a specific
+// chunk of the shellcode
+queue <unsigned int> globalChunkJobQueue;
+
+
 
 // Execution threads put the score results into this
 // queue when they finish an evaluation

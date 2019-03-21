@@ -108,7 +108,14 @@ vector <ShellcodePieceData> shellcodePieces;
 
 
 
-
+// This is going to have to be rewritten to handle multiple
+// shellcodes. Number of chunks will need to match the
+// largest shellcode. At somepoint we'll probably want
+// some buffer space so it's not so easy to determine
+// the maximum size of all contain shellcodes? This
+// would slow down encoding, but give possible doubt
+// to a reverse engineer wondering if they've found
+// all the shellcodes. Is there value there?
 void chunkShellCode()
 {
     int numChunks = __EncodedBinaryData_len / param_shellcodeChunkSize;
@@ -511,7 +518,8 @@ void *runThunkingThread(void *iValue)
     while (!DONE)
     {
         // Check local shenanigan job queue, if empty grab some
-        // from the global job queue
+        // from the global job queue. In this version of multi-threading
+        // the "job" is the index of a bot to crunch.
         while (myGenerationJobQueue.empty())
         {
             for (int i = 0; i < param_numJobsToLoad; i++)
