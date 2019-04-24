@@ -39,9 +39,14 @@
 using namespace std;
 
 
-/**********************************************************************
-  General global types and variables. Yes, global. I feel no shame.
-*********************************************************************/
+/*******************************************************************************
+  General global types and variables. Yes, global. I feel no shame. Come at me.
+********************************************************************************/
+
+enum FitnessFunctionType{SINGLE, DOUBLE};
+
+FitnessFunctionType RunType = SINGLE;
+
 
 bool DONE                      = false;
 bool THREAD_READY              = false;
@@ -174,15 +179,18 @@ string generateRandomString(uint maxOutputLength = 15, string allowedChars = "ab
     int randomIndex;
     string outputString = "";
 
-    for (uint i = 0; i < outputLength; ++i) {
+    for (uint i = 0; i < outputLength; ++i)
+    {
         randomIndex = rand() % allowedChars.length();
         outputString += allowedChars[randomIndex];
     }
 
-    if (outputString.empty()) {
+    if (outputString.empty())
+    {
         return generateRandomString(maxOutputLength, allowedChars);
     }
-    else {
+    else
+    {
         return outputString;
     }
 }
@@ -211,6 +219,7 @@ void setupEvaluationJobs()
 
 
 
+
 // Take the neural network hex code output and
 // "grade" it. This grade will determine the
 // neural network's fitness going into the next
@@ -220,7 +229,7 @@ double lowestDiff      = 300.0;
 int    lowestCharDiff  = 2000;
 int    maxMatchedChars = 0;
 
-double calculateScore(BrainTestData &brainData)
+double singleShellcodeFitnessFunction(BrainTestData &brainData)
 {
     bool useRawOutput = true;
 
@@ -432,11 +441,27 @@ double calculateScore(BrainTestData &brainData)
 
 
 
+
+
+// Take the neural network hex code output and
+// "grade" it. This grade will determine the
+// neural network's fitness going into the next
+// evolutionary epoch
+double doubleShellcodeFitnessFunction(BrainTestData &brainData)
+{
+
+}
+
+
+
+
 // New and improved. Or, new and busted. But I'm going to get there.
 // New multi-threading model will take advantage of the shellcode chunking.
 // This'll be much more efficient at utilizing resources, and scale out the
 // wazoo.
 // Chunker crunch'un thread
+// Ok, I don't have time to finish this right now. I'll have to come back to
+// this improvement after next round of conferences.
 void *runChunkCrunchingThread(void *iValue)
 {
     struct timespec sleepTime;
@@ -645,7 +670,7 @@ void *runThunkingThread(void *iValue)
             // calculate it's difference from the target if the passphrase is correct
             // and make sure it's just off for  na incorrect passphrase?
             // Sum those two to make the total score?
-            jobResults.score         = calculateScore(testData);
+            jobResults.score         = singleShellcodeFitnessFunction(testData);
             jobResults.genomeID      = testingBot->getBrainGenomeID();
             jobResults.chunkSolution = false;
             // cout<<std::fixed<<"@@ Brain score: "<<jobResults.score<<endl;
@@ -1092,10 +1117,9 @@ void calcInputOutputCount()
 
 
 
-
 int main(int argc, char *argv[])
 {
-    cout<<"Starting ENNEoS encoder. Let's evolve some brains to obfuscate shellcode. "<<endl;
+    cout<<"Starting ENNEoS encoder. Let's evolve some brains to hide shellcode. "<<endl;
     cout<<endl;
 
 
@@ -1120,7 +1144,7 @@ int main(int argc, char *argv[])
 
 
     // Should catch some signals and stuff to
-    // exit gracefull
+    // exit gracefully
     signal(SIGINT, signalHandler);
 
 
@@ -1133,6 +1157,10 @@ int main(int argc, char *argv[])
     for (int i = 0; i < param_numExecutionThreads; i++)
     {
         THREAD_READY = false;
+        // Note that this version of threading is really inefficient for shellcode
+        // chunks. The refactoring needs to be finished, badly, when there's time.
+        // Each thread should have its own genetical algorithm (CGA instance)
+        // and the queue of work fed to threads should be individual chunks
         pthread_create(&executionThreads[i], NULL, runThunkingThread, (void *)&i);
 
         while (!THREAD_READY)
