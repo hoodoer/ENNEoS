@@ -448,8 +448,94 @@ double singleShellcodeFitnessFunction(BrainTestData &brainData)
 // evolutionary epoch
 double doubleShellcodeFitnessFunction(BrainTestData &brainData)
 {
+    double brainScore = 0.0;
+    double floatDiff;
+    double diff;
+    double bonus = 0.0;
+    double desiredValue;
+    static int bonusAmount = 1000;
 
+
+    int charTest;
+
+    for (unsigned int i = 0; i < brainData.usedRealPassphrase.size(); i++)
+    {
+        floatDiff = 0.0;
+        charTest  = 0;
+
+        // The inner loop is for going through the individual
+        // hex characters
+        for (unsigned int j = 0; j < numOutputs; j++)
+        {
+            // Get an integer that represents how "far" apart the actual shellcode
+            // character and the neural network output character is. 0 to 255.
+            // If the stimulus was the real passphrase, we want the desired output to be shellcode
+            // If the stimulas wasn't the passphrase, we want something else (e.g. nopsled)
+
+            if (brainData.usedRealPassphrase.at(i))
+            {
+                desiredValue = shellcodePieces.at(chunkCounter).desiredNumericOutput.at(j);
+            }
+            else
+            {
+                // Not the real password, it should be a nopsled idealy
+                // 144 == 0x90 == nop
+                desiredValue = 144.0;
+            }
+
+            diff = fabs(desiredValue - brainData.rawBrainOutputs.at(i).at(j));
+            floatDiff += diff;
+//            cout<<"$$$ Looking for double: "<<desiredValue<<", got double: "<<brainData.rawBrainOutputs.at(i).at(j)<<endl;
+
+            // Gotta a character perfectly, give 'em a bonus!
+            if (diff < 0.003)
+            {
+                bonus += (double)bonusAmount;
+            }
+
+
+            // Test for solution (char)
+            charTest += (double)abs((int)desiredValue - (int)brainData.brainOutputs.at(i).at(j));
+        }
+
+        if (charTest < lowestCharDiff)
+        {
+            cout<<"!!! New lowest Char Diff found: "<<charTest<<endl;
+            lowestCharDiff = charTest;
+        }
+
+
+        // We need to convert brainScore to an average
+        // across the outputs. Average char difference
+        //  cout<<"^^^^ charDiff before mods: "<<charDiff<<endl;
+        floatDiff = floatDiff/(double)numOutputs;
+        //   cout<<"^^^^ charDiff after mods: "<<charDiff<<endl;
+
+
+        // Debugging
+        if (floatDiff < lowestDiff)
+        {
+            lowestDiff = floatDiff;
+            cout<<"!!! New lowest shellcode diff average found: "<<lowestDiff<<endl;
+        }
+
+
+        if (charTest == 0)
+        {
+            cout<<"!!!!! Solution Found!"<<endl;
+            return -1.0;
+        }
+    }
+
+    // Bonuses are good to inflate the score of better performing neural networks
+    brainScore += bonus;
+
+    // Square it to give it a nice ramp
+    brainScore = brainScore * brainScore;
+
+    return brainScore;
 }
+
 
 
 

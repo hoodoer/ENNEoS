@@ -204,7 +204,7 @@ const int    param_targetNumSpecies               = 100;
 // Parallel processing parameters:
 // Number of execution processes to 
 // use for evaluations.
-const int    param_numExecutionThreads            = 6;
+const int    param_numExecutionThreads            = 1;
 
 // How many jobs the execution threads will snag
 // at once from global job queue
