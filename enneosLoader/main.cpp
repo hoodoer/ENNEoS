@@ -5,7 +5,7 @@
 // For testing the encoding of shellcode in neural networks
 //
 // Drew Kirkpatrick, drew.kirkpatrick@gmail.com
-// NopSec
+
 
 #include <iostream>
 #include <fstream>

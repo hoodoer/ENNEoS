@@ -10,7 +10,6 @@
 // Drew Kirkpatrick
 // @hoodoer
 // drew.kirkpatrick@gmail.com
-// nopsec.com
 //
 // ENNEoS (Evolutionary Neural Network Encoder of Shellcode/Shenanigans)
 //
@@ -597,12 +596,33 @@ void *runThunkingThread(void *iValue)
             jobResults.botIndex = jobIndex;
 
 
+            int testingLoops;
+
+            // How many times we "test" the neural
+            // network depends heavily on what kinda proof of concept
+            // we're doing. Single shellcode and don't care about passphrase?
+            // Two shellcodes and you do?
+            // This is a bit messy
+            switch (RunType)
+            {
+            case SINGLE:
+                testingLoops = 1;
+                break;
+
+            case DOUBLE:
+                testingLoops = 20;
+                break;
+
+            default:
+                testingLoops = 1;
+                break;
+            }
 
             // TESTING TIME!
-            // We can use the param_numTicks
+            // We can use the testingLoops
             // to control the number of stimulus we
             // throw at the neural net in the bot.
-            for (int i = 0; i < param_numTicks; i++)
+            for (int i = 0; i < testingLoops; i++)
             {
                 // !! Short circuiting this to just the correct
                 // passphrase. Really just want to see accurate shellcode
@@ -620,7 +640,7 @@ void *runThunkingThread(void *iValue)
                 {
                     // If this is our last input, we
                     // need to use the real one
-                    if (i == param_numTicks-1)
+                    if (i == testingLoops-1)
                     {
                         inputToUse     = passphrase;
                         passphraseUsed = true;
@@ -670,7 +690,21 @@ void *runThunkingThread(void *iValue)
             // calculate it's difference from the target if the passphrase is correct
             // and make sure it's just off for  na incorrect passphrase?
             // Sum those two to make the total score?
-            jobResults.score         = singleShellcodeFitnessFunction(testData);
+            switch (RunType)
+            {
+            case SINGLE:
+                jobResults.score = singleShellcodeFitnessFunction(testData);
+                break;
+
+            case DOUBLE:
+                jobResults.score = doubleShellcodeFitnessFunction(testData);
+                break;
+
+            default:
+                cout<<"Something is amiss here. What did you screw up with RunType?"<<endl;
+                exit(1);
+            }
+
             jobResults.genomeID      = testingBot->getBrainGenomeID();
             jobResults.chunkSolution = false;
             // cout<<std::fixed<<"@@ Brain score: "<<jobResults.score<<endl;

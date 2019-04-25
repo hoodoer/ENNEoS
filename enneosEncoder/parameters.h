@@ -103,7 +103,7 @@ enum UnderFlowMode
 // algorithms. numAgents should reflect
 // the number of agents managed by a single instance of Cga.
 const int    param_numAgents                      = 3000;
-const int    param_numTicks                       = 1;
+//const int    param_numTicks                       = 1;
 const int    param_maxNumGenerations              = 500;
 
 // How small to break up the shellcode. It's too hard

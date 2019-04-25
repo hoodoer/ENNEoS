@@ -16,7 +16,7 @@
 //
 // Drew Kirkpatrick
 // drew.kirkpatrick@gmail.com
-// NopSec
+
 
 class ShellyBot
 {
