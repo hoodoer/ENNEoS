@@ -44,7 +44,7 @@ using namespace std;
 
 enum FitnessFunctionType{SINGLE, DOUBLE};
 
-FitnessFunctionType RunType = SINGLE;
+FitnessFunctionType RunType = DOUBLE;
 
 
 bool DONE                      = false;
@@ -456,7 +456,13 @@ double doubleShellcodeFitnessFunction(BrainTestData &brainData)
     static int bonusAmount = 1000;
 
 
+    // Hmm, in this new approach, we need a cumulative char test for
+    // whether a solution is found. It doesn't work for a single pass through
+    // the loops, the network has to pass perfectly on all loops.
     int charTest;
+    
+    // If in any loop we don't solve correctly, we flip this to false.
+    bool solutionFound = true;
 
     for (unsigned int i = 0; i < brainData.usedRealPassphrase.size(); i++)
     {
@@ -520,11 +526,24 @@ double doubleShellcodeFitnessFunction(BrainTestData &brainData)
         }
 
 
-        if (charTest == 0)
+   //     if (charTest == 0)
+   //     {
+    //        cout<<"!!!!! Solution Found!"<<endl;
+   //         return -1.0;
+    //    }
+        
+        if (charTest != 0)
         {
-            cout<<"!!!!! Solution Found!"<<endl;
-            return -1.0;
+          solutionFound = false;
         }
+    }
+    
+    // Test if this neural network
+    // passed all checks...
+    if (solutionFound)
+    {
+      cout<<"!!!! BOOM - Solution Found. Have a scone and a happy dance."<<endl;
+      return -1.0;
     }
 
     // Bonuses are good to inflate the score of better performing neural networks
@@ -663,6 +682,7 @@ void *runThunkingThread(void *iValue)
             myGenerationJobQueue.pop();
 
             bool   passphraseUsed = false;
+            bool   thisLoopRealPassphrase;
 
             // The bot we're testing and the i/o
             ShellyBot             *testingBot;
@@ -718,9 +738,14 @@ void *runThunkingThread(void *iValue)
                 // If we're to the last input, and we
                 // haven't used the passphrase yet, we gotta
                 // use it now
+                thisLoopRealPassphrase = false;
+                
+                //cout<<"$ Testing Loop: "<<i<<endl;
+                
                 if (passphraseUsed)
                 {
                     inputToUse = generateRandomString(passphrase.length());
+                    //cout<<"** Defaulting to leftover random phrases..."<<endl;
                 }
                 else // we haven't used the real trigger yet
                 {
@@ -728,29 +753,36 @@ void *runThunkingThread(void *iValue)
                     // need to use the real one
                     if (i == testingLoops-1)
                     {
-                        inputToUse     = passphrase;
-                        passphraseUsed = true;
+                        inputToUse            = passphrase;
+                        passphraseUsed         = true;
+                        thisLoopRealPassphrase = true;
+                        //cout<<"** Sneaking in the last possible true passphrase"<<endl;
                     }
                     else if (RandBool()) // randomly pick if we use it
                     {
-                        inputToUse     = passphrase;
-                        passphraseUsed = true;
+                        inputToUse             = passphrase;
+                        passphraseUsed         = true;
+                        thisLoopRealPassphrase = true;
+                        //cout<<"** Randomly selected TRUE passphrase"<<endl;
                     }
                     else
                     {
                         inputToUse = generateRandomString(passphrase.length());
+                        //cout<<"** Randomly chose fake passphrase"<<endl;
                     }
                 }
 
                 // We need to record result data to pass
                 // to the fitness function
-                if (passphraseUsed)
+                if (thisLoopRealPassphrase)
                 {
                     testData.usedRealPassphrase.push_back(true);
+                    //cout<<"-- Using real passphrase..."<<endl;
                 }
                 else
                 {
                     testData.usedRealPassphrase.push_back(false);
+                    //cout<<"-- Rendom passphrase..."<<endl;
                 }
 
 

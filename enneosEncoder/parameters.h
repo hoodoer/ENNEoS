@@ -15,9 +15,9 @@ For really large populations, you might want to increase
 param_mMatched (C3 constant from NEAT paper). In the NEAT paper,
 they discussed changing it from the default 0.4 to 3.0 when
 they were doing a really difficult task, and they went from
-populations of 150 to 1000. 
+populations of 150 to 1000.
 If you do increase param_mMatched, you'll need increase
-param_compatibilityThreshold as well. 
+param_compatibilityThreshold as well.
 
 Note, C1 is param_mExcess, and C2 is param_mDisjoint. These
 are generally left at 1.0.
@@ -34,17 +34,17 @@ threshold.
 
 
 In larger populations, you might want to consider adding
-higher chances of new nodes/links. 
+higher chances of new nodes/links.
 param_chanceAddNode
 param_chanceAddLink
 This is because larger populations can tolerate
-a larger number of prospective species, and 
+a larger number of prospective species, and
 greater topological diversity
 
 
 Remember that because of speciation, the system
 is tolerant to frequent mutations, so don't be
-afraid to play around with mutation rates. 
+afraid to play around with mutation rates.
 
 
 If you haven't seen new species develop after 10 generations, you probably
@@ -53,23 +53,23 @@ need to change parameters
 
 If your application requires the development of memory (short-term, long-term),
 etc, and your neural network (or in the case of NEAT, Recurrent Neural Networks, RNN)
-needs to keep track of something over time internally, you'll have to have 
+needs to keep track of something over time internally, you'll have to have
 recurrent links. Might want to consider upping the chances of adding recurrent
 links
 param_chanceAddRecurrentLink
 
 
 As far as how long a generation "lives", you should probably choose between an
-amount of time (param_generationTime), or a number of cycles (param_numTicks). 
+amount of time (param_generationTime), or a number of cycles (param_numTicks).
 Make sure you code up your software to process a generation for that many ticks,
-or that length of time before moving on the the Epoch method of the genetic 
-algorithm class (Cga class). 
+or that length of time before moving on the the Epoch method of the genetic
+algorithm class (Cga class).
 
 
 For weight mutation rates, you probably want to set these pretty high (50% or more)
-for control tasks, and lower rates (under 1%) for high input stuff like playing 
+for control tasks, and lower rates (under 1%) for high input stuff like playing
 a game Othello. So if you have lots of inputs, perhaps use low mutation rates,
-and if you have a small number of inputs, and are doing some kind of control 
+and if you have a small number of inputs, and are doing some kind of control
 task, use high mutation rates
 param_mutationRate
 param_activationMutationRate
@@ -202,9 +202,9 @@ const int    param_targetNumSpecies               = 100;
 
 
 // Parallel processing parameters:
-// Number of execution processes to 
+// Number of execution processes to
 // use for evaluations.
-const int    param_numExecutionThreads            = 1;
+const int    param_numExecutionThreads            = 5;
 
 // How many jobs the execution threads will snag
 // at once from global job queue
