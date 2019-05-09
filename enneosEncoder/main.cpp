@@ -446,6 +446,10 @@ double singleShellcodeFitnessFunction(BrainTestData &brainData)
 // "grade" it. This grade will determine the
 // neural network's fitness going into the next
 // evolutionary epoch
+// This fitness function is the proof-of-concept
+// for "double stuffing" a neural network with
+// two different shellcodes. One nopsled, one sneaky
+// something else
 double doubleShellcodeFitnessFunction(BrainTestData &brainData)
 {
     double brainScore = 0.0;
@@ -453,12 +457,17 @@ double doubleShellcodeFitnessFunction(BrainTestData &brainData)
     double diff;
     double bonus = 0.0;
     double desiredValue;
-    static int bonusAmount = 1000;
+    
+    static int    bonusAmount = 1000;
+    static double nopRawValue = 144.0/255.0;
 
 
     // Hmm, in this new approach, we need a cumulative char test for
     // whether a solution is found. It doesn't work for a single pass through
     // the loops, the network has to pass perfectly on all loops.
+    // Ok, that should be fixed. But now I need a good metric to
+    // monitor if actual progress is being made, short of an
+    // actual solution
     int charTest;
     
     // If in any loop we don't solve correctly, we flip this to false.
@@ -466,6 +475,7 @@ double doubleShellcodeFitnessFunction(BrainTestData &brainData)
 
     for (unsigned int i = 0; i < brainData.usedRealPassphrase.size(); i++)
     {
+        cout<<"-- DoubleFitFunc score loop pass: "<<i<<endl;
         floatDiff = 0.0;
         charTest  = 0;
 
@@ -481,13 +491,22 @@ double doubleShellcodeFitnessFunction(BrainTestData &brainData)
             if (brainData.usedRealPassphrase.at(i))
             {
                 desiredValue = shellcodePieces.at(chunkCounter).desiredNumericOutput.at(j);
+                cout<<"  Processing REAL passphrase input..."<<endl;
+
             }
             else
             {
                 // Not the real password, it should be a nopsled idealy
                 // 144 == 0x90 == nop
-                desiredValue = 144.0;
+                // Remember that the brain is outputting values in the 0.0->1.0 range
+                // so convert your character value to this expectation (i.e. 144.0/255.0)
+                cout<<"  Processing bullshit passphrase input..."<<endl;
+                desiredValue = nopRawValue;
             }
+            
+            cout<<"  Desired brain output: "<<desiredValue<<endl;
+            cout<<"  Actual brain output: "<<brainData.rawBrainOutputs.at(i).at(j)<<endl;
+            cout<<endl;
 
             diff = fabs(desiredValue - brainData.rawBrainOutputs.at(i).at(j));
             floatDiff += diff;
@@ -551,6 +570,9 @@ double doubleShellcodeFitnessFunction(BrainTestData &brainData)
 
     // Square it to give it a nice ramp
     brainScore = brainScore * brainScore;
+    
+    cout<<"End of doublay fitness function, brainScore is: "<<brainScore<<endl;
+    exit(1);
 
     return brainScore;
 }
