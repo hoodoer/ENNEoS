@@ -1,6 +1,7 @@
 # ENNEoS
 VERY ROUGH PROOF OF CONCEPT
 Work in progress. 
+Current status: Regularly being broken by me trying to stuff multiple shellcodes into neural networks. 
 
 Evolutionary Neural Network Encoder of Shenanigans
 
