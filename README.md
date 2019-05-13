@@ -16,7 +16,7 @@ https://github.com/hoodoer/NEAT_Thesis
 Drew Kirkpatrick
 @hoodoer
 drew.kirkpatrick@gmail.com
-nopsec.com
+
 
 
 
