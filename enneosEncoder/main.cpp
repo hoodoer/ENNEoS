@@ -54,7 +54,7 @@ bool EXECUTION_THREADS_ONLINE  = false;
 unsigned int generationCounter     = 1;
 unsigned int chunkCounter          = 0;
 
-const int nanoSleepAmount      = 1000; // millionth of a second
+const int nanoSleepAmount      = 100; // millionth of a second
 
 
 string passphrase;
@@ -459,7 +459,8 @@ double doubleShellcodeFitnessFunction(BrainTestData &brainData)
     double desiredValue;
     
     static int    bonusAmount = 1000;
-    static double nopRawValue = 144.0/255.0;
+    static double nopValue    = 144.0;
+    static double nopRawValue = nopValue/255.0;
 
 
     // Hmm, in this new approach, we need a cumulative char test for
@@ -468,16 +469,16 @@ double doubleShellcodeFitnessFunction(BrainTestData &brainData)
     // Ok, that should be fixed. But now I need a good metric to
     // monitor if actual progress is being made, short of an
     // actual solution
-    int charTest;
+    int charTest = 0;
     
     // If in any loop we don't solve correctly, we flip this to false.
     bool solutionFound = true;
 
     for (unsigned int i = 0; i < brainData.usedRealPassphrase.size(); i++)
     {
-        cout<<"-- DoubleFitFunc score loop pass: "<<i<<endl;
+       // cout<<"-- DoubleFitFunc score loop pass: "<<i<<endl;
         floatDiff = 0.0;
-        charTest  = 0;
+       //charTest  = 0;
 
         // The inner loop is for going through the individual
         // hex characters
@@ -491,7 +492,7 @@ double doubleShellcodeFitnessFunction(BrainTestData &brainData)
             if (brainData.usedRealPassphrase.at(i))
             {
                 desiredValue = shellcodePieces.at(chunkCounter).desiredNumericOutput.at(j);
-                cout<<"  Processing REAL passphrase input..."<<endl;
+              //  cout<<"  Processing REAL passphrase input..."<<endl;
 
             }
             else
@@ -500,13 +501,13 @@ double doubleShellcodeFitnessFunction(BrainTestData &brainData)
                 // 144 == 0x90 == nop
                 // Remember that the brain is outputting values in the 0.0->1.0 range
                 // so convert your character value to this expectation (i.e. 144.0/255.0)
-                cout<<"  Processing bullshit passphrase input..."<<endl;
+          //      cout<<"  Processing bullshit passphrase input..."<<endl;
                 desiredValue = nopRawValue;
             }
+           // cout<<endl;
             
-            cout<<"  Desired brain output: "<<desiredValue<<endl;
-            cout<<"  Actual brain output: "<<brainData.rawBrainOutputs.at(i).at(j)<<endl;
-            cout<<endl;
+          //  cout<<std::fixed<<"  Desired brain output: "<<desiredValue<<endl;
+           // cout<<std::fixed<<"  Actual brain output: "<<brainData.rawBrainOutputs.at(i).at(j)<<endl;
 
             diff = fabs(desiredValue - brainData.rawBrainOutputs.at(i).at(j));
             floatDiff += diff;
@@ -520,48 +521,59 @@ double doubleShellcodeFitnessFunction(BrainTestData &brainData)
 
 
             // Test for solution (char)
-            charTest += (double)abs((int)desiredValue - (int)brainData.brainOutputs.at(i).at(j));
+            //cout<<"-- CharTest component desiredValue: "<<(int)(desiredValue * 255.0)<<endl;
+            //cout<<"-- CharTest component output: "<<(int)brainData.brainOutputs.at(i).at(j)<<endl;
+            
+            charTest += abs((int)(desiredValue * 255.0) - (int)brainData.brainOutputs.at(i).at(j));
+           // cout<<"CharTest is: "<<charTest<<endl;
+
         }
 
-        if (charTest < lowestCharDiff)
-        {
-            cout<<"!!! New lowest Char Diff found: "<<charTest<<endl;
-            lowestCharDiff = charTest;
-        }
 
 
         // We need to convert brainScore to an average
         // across the outputs. Average char difference
         //  cout<<"^^^^ charDiff before mods: "<<charDiff<<endl;
         floatDiff = floatDiff/(double)numOutputs;
-        //   cout<<"^^^^ charDiff after mods: "<<charDiff<<endl;
+     //   cout<<std::fixed<<"  Float Diff Value: "<<floatDiff<<endl;
+     //   cout<<"- Starting loop brainScore: "<<brainScore<<endl;
+        
+       // cout<<"- LoopScore: "<<fabs(1.0-floatDiff)<<endl;
+        brainScore += fabs(1.0-floatDiff);
+        
+      //  cout<<"- Ending loop brainScore: "<<brainScore<<endl;
+
+   //     cout<<endl<<endl;
 
 
         // Debugging
         if (floatDiff < lowestDiff)
         {
             lowestDiff = floatDiff;
-            cout<<"!!! New lowest shellcode diff average found: "<<lowestDiff<<endl;
+            cout<<std::fixed<<"!!! New lowest shellcode diff average found: "<<lowestDiff<<endl;
         }
 
-
-   //     if (charTest == 0)
-   //     {
-    //        cout<<"!!!!! Solution Found!"<<endl;
-   //         return -1.0;
-    //    }
-        
         if (charTest != 0)
         {
           solutionFound = false;
         }
     }
     
+    if (charTest < lowestCharDiff)
+    {
+      //cout<<"!!! New lowest Char Diff found: "<<charTest<<endl;
+      //cout<<"-------      charTest: "<<charTest<<endl;
+      //cout<<"-------lowestCharDiff: "<<lowestCharDiff<<endl;
+      lowestCharDiff = charTest;
+    }
+
+    
     // Test if this neural network
     // passed all checks...
     if (solutionFound)
     {
       cout<<"!!!! BOOM - Solution Found. Have a scone and a happy dance."<<endl;
+      exit(1);
       return -1.0;
     }
 
@@ -571,8 +583,8 @@ double doubleShellcodeFitnessFunction(BrainTestData &brainData)
     // Square it to give it a nice ramp
     brainScore = brainScore * brainScore;
     
-    cout<<"End of doublay fitness function, brainScore is: "<<brainScore<<endl;
-    exit(1);
+    //cout<<"End of doublay fitness function, brainScore is: "<<brainScore<<endl;
+    //exit(1);
 
     return brainScore;
 }
