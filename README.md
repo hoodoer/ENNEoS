@@ -27,6 +27,7 @@ The shellcode to be encoded into the neural networks is included in the "encoded
 
 You can generate one of these header files from raw shellcode binaries using:
 https://github.com/hoodoer/shellcodeEncryptor
+
 Just skip the encryption options, it'll output a header file with your shellcode. 
 
 This is most definitely a work in progress, but the initial demo works,
