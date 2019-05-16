@@ -44,7 +44,7 @@ using namespace std;
 
 enum FitnessFunctionType{SINGLE, DOUBLE};
 
-FitnessFunctionType RunType = DOUBLE;
+FitnessFunctionType RunType = SINGLE;
 
 
 bool DONE                      = false;
@@ -573,7 +573,7 @@ double doubleShellcodeFitnessFunction(BrainTestData &brainData)
     if (solutionFound)
     {
       cout<<"!!!! BOOM - Solution Found. Have a scone and a happy dance."<<endl;
-      exit(1);
+     // exit(1);
       return -1.0;
     }
 
@@ -750,7 +750,8 @@ void *runThunkingThread(void *iValue)
                 break;
 
             case DOUBLE:
-                testingLoops = 20;
+            //    testingLoops = 20;
+                testingLoops = 5;
                 break;
 
             default:
@@ -834,7 +835,7 @@ void *runThunkingThread(void *iValue)
 
 
                 // Play nice
-                nanosleep(&sleepTime, NULL);
+               // nanosleep(&sleepTime, NULL);
             }
 
 
@@ -1281,6 +1282,7 @@ void signalHandler(int signal)
     case SIGINT: // Time to exit
         cout<<"Caught a SIGINT!"<<endl;
         DONE = true;
+        exit(0);
         break;
 
     default:
