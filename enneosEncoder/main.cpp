@@ -688,6 +688,7 @@ void *runChunkCrunchingThread(void *iValue)
             chunkIndex = myChunkQueue.front();
             myChunkQueue.pop();
 
+
             // ok, now we need a whole evolutionary system
             // right about.... here.
 
