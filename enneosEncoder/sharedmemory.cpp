@@ -132,6 +132,38 @@ bool thunkerThreadGetJobToDo(unsigned int &assignedJob)
 
 
 
+////////////////////////////////////////////////////////////////
+
+// Called by chunk cruncher thread to
+// retrieve an eval job for it's job queue
+// Returns false if the job queue is empty,
+// and there are no more jobs to do
+bool chunkCruncherThreadGetJobToDo(unsigned int &assignedChunk)
+{
+    bool returnValue;
+
+    shmSemLock();
+    {
+        if (!globalChunkJobQueue.empty())
+        {
+            returnValue = true;
+            assignedChunk = globalChunkJobQueue.front();
+            globalChunkJobQueue.pop();
+        }
+        else
+        {
+            returnValue = false;
+        }
+    }
+    shmSemUnlock();
+
+    return returnValue;
+}
+
+
+
+
+
 // Called by thunker thread to post up an assessment
 // score for the puppetmaster to use for evolution
 void thunkerThreadAddEvalResult(botEvaluationData evalData)
@@ -163,6 +195,23 @@ void puppetMasterAddJobToQueue(unsigned int newEvalJob)
     }
     shmSemUnlock();
 }
+
+
+
+
+
+// Allows the puppet master to add another
+// chunk evaluation to the back of
+// the job queue
+void puppetMasterAddChunkToQueue(unsigned int newChunkEvalJob)
+{
+    shmSemLock();
+    {
+        globalChunkJobQueue.push(newChunkEvalJob);
+    }
+    shmSemUnlock();
+}
+
 
 
 

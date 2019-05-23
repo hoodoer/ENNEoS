@@ -44,7 +44,7 @@ using namespace std;
 
 enum FitnessFunctionType{SINGLE, DOUBLE};
 
-FitnessFunctionType RunType = SINGLE;
+FitnessFunctionType RunType = DOUBLE;
 
 
 bool DONE                      = false;
@@ -212,6 +212,15 @@ void setupEvaluationJobs()
         // threads will peel a few off
         // at a time to crunch on
         puppetMasterAddJobToQueue(i);
+    }
+
+    // Ok, this chunk job queue is for our new
+    // threading approach
+    for (unsigned int i = 0; i < shellcodePieces.size(); i++)
+    {
+        // Queue the indices of the different chunks
+        // And the chunk crunchers will work on them
+        puppetMasterAddChunkToQueue(i);
     }
 }
 
@@ -598,8 +607,6 @@ double doubleShellcodeFitnessFunction(BrainTestData &brainData)
 // This'll be much more efficient at utilizing resources, and scale out the
 // wazoo.
 // Chunker crunch'un thread
-// Ok, I don't have time to finish this right now. I'll have to come back to
-// this improvement after next round of conferences.
 void *runChunkCrunchingThread(void *iValue)
 {
     struct timespec sleepTime;
@@ -613,6 +620,16 @@ void *runChunkCrunchingThread(void *iValue)
     // next thread to startup and get its
     // index number
     THREAD_READY = true;
+
+
+    // We need bot wrappers for our
+    // neural networks
+    vector <ShellyBot*> chunkyShenaniganBots;
+
+
+    // Each chunk crunching thread gets it's own
+    // genetics lab for evolution.
+    Cga madScienceLab(param_numAgents, numInputs, numOutputs);
 
 
 
@@ -639,8 +656,44 @@ void *runChunkCrunchingThread(void *iValue)
     // DONE is a global. Deal with it.
     while (!DONE)
     {
-        // Hmm, I need to insert some of that genetic stuff here.
+        // Check the local job queue, if it's empty
+        // go grab some more from the global chunk
+        // job queue.
+        while (myChunkQueue.empty())
+        {
+            for (unsigned int i = 0; i < param_numJobsToLoad; i++)
+            {
+                // I don't have any more chunk jobs on my
+                // to-do list, get some more
+                if (chunkCruncherThreadGetJobToDo(chunkIndex))
+                {
+                    myChunkQueue.push(chunkIndex);
+                }
+                else
+                {
+                    // Global job queue is empty,
+                    // run away, run away
+                    pthread_exit(NULL);
+                  //  break;
+                }
 
+                nanosleep(&sleepTime, NULL);
+            }
+        }
+
+
+        // Ok, we have our shellcode chunks, let's get to it.
+        if (!myChunkQueue.empty())
+        {
+            chunkIndex = myChunkQueue.front();
+            myChunkQueue.pop();
+
+            // ok, now we need a whole evolutionary system
+            // right about.... here.
+
+        }
+
+        nanosleep(&sleepTime, NULL);
     }
 }
 

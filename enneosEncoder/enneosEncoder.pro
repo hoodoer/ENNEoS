@@ -4,7 +4,7 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 
-QMAKE_CXXFLAGS_WARN_ON = -Wall -Wextra -Wno-enum-compare
+QMAKE_CXXFLAGS_WARN_ON = -w
 LIBS += -lpthread
 
 SOURCES += main.cpp \
