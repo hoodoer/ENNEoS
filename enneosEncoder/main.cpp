@@ -340,6 +340,8 @@ double singleShellcodeFitnessFunction(BrainTestData &brainData)
         // Bonuses are good to inflate the score of better performing neural networks
         brainScore += bonus;
 
+        // Avoid a situation where score is under 1.0, and scores shrink on the squaring...
+        brainScore += 2.0;
         // Square it to give it a nice ramp
         brainScore = brainScore * brainScore;
 
@@ -437,6 +439,9 @@ double singleShellcodeFitnessFunction(BrainTestData &brainData)
         //    cout<<"At end of calcScore, brainScore total is: "<<brainScore<<endl;
         brainScore += bonus;
         //    cout<<"After bonus: "<<brainScore<<endl;
+ 
+        // Avoid a situation where score is under 1.0, and scores shrink on the squaring...
+        brainScore += 2.0;
         // Square it to give it a nice ramp
         brainScore = brainScore * brainScore;
         //    cout<<std::fixed<<"Final score: "<<brainScore<<endl;
@@ -589,6 +594,8 @@ double doubleShellcodeFitnessFunction(BrainTestData &brainData)
     // Bonuses are good to inflate the score of better performing neural networks
     brainScore += bonus;
 
+    // Avoid a situation where score is under 1.0, and scores shrink on the squaring...
+    brainScore += 2.0;
     // Square it to give it a nice ramp
     brainScore = brainScore * brainScore;
     
