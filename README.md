@@ -34,3 +34,5 @@ This is most definitely a work in progress, but the initial demo works,
 popping a meterpreter shell in Windows from shellcode output by the neural network
 
 
+Good overview of the technique can be seen at my CackalackyCon talk:
+https://youtu.be/nTb6SBGaLR8
